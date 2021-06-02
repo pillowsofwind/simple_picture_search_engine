@@ -1,0 +1,54 @@
+<template>
+  <v-app id="mainpage"
+         class="backgroundImage"
+         :style="backgroundimage">
+    <v-main>
+      <v-container>
+        <SearchBar
+            v-bind:my-data="history"
+            v-on:search="search"/>
+
+      </v-container>
+    </v-main>
+    <v-spacer></v-spacer>
+    <v-footer
+        style=" filter:alpha(opacity:30); opacity:0.7; clear: both;display: block;text-align: center;margin: 0px auto;position: absolute;bottom: 0%;width: 100%;">
+      ©2021, Tsinghua
+    </v-footer>
+  </v-app>
+</template>
+
+<script>
+import SearchBar from "@/components/SearchBar";
+
+
+export default {
+  name: "MainPage",
+  components: {SearchBar},
+  data() {
+    return {
+      history: [],// 历史搜索关键词信息
+      result: [],// 搜索结果的url信息
+      backgroundimage: "url(https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fdpic.tiankong.com%2Fs1%2F2h%2FQJ8879664576.jpg&refer=http%3A%2F%2Fdpic.tiankong.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625233227&t=c4e40368a5e3a774032107f60a13c07c)"
+    }
+  },
+  methods: {
+    search: function (msg) {
+      let keyword = msg.keyword;
+      console.log(keyword);
+      if (history.length < 10) {
+        history.push(keyword);
+      } else {
+        history.shift();
+        history.push(keyword);
+      }
+      // TODO:发送搜索请求，填进result
+
+    },
+  }
+}
+</script>
+
+<style scoped>
+
+</style>
