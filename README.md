@@ -22,3 +22,28 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+
+## elastic API
+
+- get server status
+
+  ```javascript
+  GET-url:"ip:port/_cat/health?v"
+  // code example:
+  this.$http.get("api/_cat/health?v").then((res) => {
+  	console.log(res);
+  }, (err) => {
+  	console.log(err);
+  });
+  ```
+
+- search
+
+  ```
+  
+  ```
+
+- etc.
+

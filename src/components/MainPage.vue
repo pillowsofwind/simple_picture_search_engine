@@ -36,14 +36,20 @@ export default {
     search: function (msg) {
       let keyword = msg.keyword;
       console.log(keyword);
-      if (history.length < 10) {
-        history.push(keyword);
-      } else {
-        history.shift();
-        history.push(keyword);
-      }
+      // if (history.length < 10) {
+      //   history.push(keyword);
+      // } else {
+      //   history.shift();
+      //   history.push(keyword);
+      // }
       // TODO:发送搜索请求，填进result
-
+      this.$http.get("api/_search?q=descriptions:"+keyword).then((res)=>{
+        let hits = res.data.hits.hits;
+        console.log(hits);
+      }, (err) => {
+        let error = err.json();
+        console.log(error);
+      })
     },
   }
 }
