@@ -24,11 +24,14 @@ if server.count() == 0:
 
 print(server.count())
 
-settings = {
-	"max_result_window": "20"
+header = {
+	"Content-Type": "application/json"
 }
-server.put("images/_settings", settings)
-# requests.post("http://localhost/images/_settings", data=settings)
+settings = {
+	"max_result_window": "10000"
+}
+res = requests.put("http://localhost:9200/images/_settings", headers=header, data=json.dumps(settings))
+print(res.json())
 
 # query demo
 # while True:
