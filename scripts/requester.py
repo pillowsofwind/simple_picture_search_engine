@@ -23,21 +23,3 @@ if server.count() == 0:
 		pass
 
 print(server.count())
-
-header = {
-	"Content-Type": "application/json"
-}
-settings = {
-	"max_result_window": "10000"
-}
-res = requests.put("http://localhost:9200/images/_settings", headers=header, data=json.dumps(settings))
-print(res.json())
-
-# query demo
-# while True:
-# 	s = input("put a query:")	# query by id
-# 	try:
-# 		res = server.get("images", s)
-# 		print(res)
-# 	except:
-# 		pass
