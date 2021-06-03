@@ -8,14 +8,14 @@
           按上下键可以选择列表条目
       -->
       <input type="text" v-model="keyword" @keyup="get($event)" @keydown.enter="search()" @keydown.down="selectDown()"
-             @keydown.up.prevent="selectUp()">
+             @keydown.up.prevent="selectUp()" @focus="ifFocus = true;" @blur="ifFocus = false;">
       <!-- 这是一个小叉叉，点击它可清除输入框内容 -->
       <span class="search-reset" @click="clearInput()">&times;</span>
       <button class="search-btn" @click="search()">Search</button>
       <div class="search-select">
         <!-- transition-group也是vue2.0中的新特性,tag='ul'表示用ul包裹v-for出来的li -->
         <transition-group name="itemfade" tag="ul" mode="out-in" v-cloak>
-          <li v-for="(value,index) in myData" :class="{selectback:index==now}"
+          <li v-show="ifFocus" v-for="(value,index) in myData" :class="{selectback:index==now}"
               class="search-select-option search-select-list" @mouseover="selectHover(index)"
               @click="selectClick(index)" :key="value">
             {{ value }}
@@ -41,6 +41,7 @@ export default {
       keyword: '',// v-model绑定的输入框的value
       now: -1,
       searchIndex: 0,
+      ifFocus: false,
     }
   },
   methods: {
