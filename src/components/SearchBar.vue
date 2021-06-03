@@ -10,7 +10,7 @@
       <input ref="searchInput" class="inputInfo" type="text" v-model="keyword" @keyup="get($event)"
              @keydown.enter="search()"
              @keydown.down="selectDown()"
-             @keydown.up.prevent="selectUp()" @focus="ifFocus = true;" @blur="ifFocus = false;">
+             @keydown.up.prevent="selectUp()" @focus="ifFocus = true;" @blur="setFocusFalse()">
       <!-- 这是一个小叉叉，点击它可清除输入框内容 -->
       <span class="search-reset" @click="clearInput()">&times;</span>
       <button class="search-btn" @click="search()">Search</button>
@@ -90,6 +90,12 @@ export default {
     },
     clearInput: function () {
       this.keyword = '';
+    },
+    setFocusFalse: function () {
+      let that = this;
+      setTimeout(function () {
+        that.ifFocus = false;
+      }, 300);
     }
   },
 }
@@ -106,9 +112,11 @@ export default {
 
 .search-input input {
   border: 1px solid #e4e4e4;
+  background: #eeeeee;
   box-sizing: border-box;
   width: 500px;
   height: 45px;
+  border-radius: 10px;
   font-size: 18px;
   float: left;
   padding-left: 10px;
@@ -119,8 +127,9 @@ export default {
 .search-btn {
   height: 45px;
   width: 100px;
-  border: 1px solid mediumseagreen;
-  background-color: mediumseagreen;
+  border: 2px darkblue;
+  border-radius: 10px;
+  background-color: darkcyan;
   color: white;
   font-size: 16px;
   font-weight: bold;
@@ -135,6 +144,7 @@ export default {
   position: absolute;
   top: 45px;
   width: 500px;
+  border-radius: 10px;
   box-sizing: border-box;
   z-index: 999;
 }
