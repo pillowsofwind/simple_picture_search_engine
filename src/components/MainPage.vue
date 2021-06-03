@@ -65,8 +65,7 @@ export default {
               "fuzziness": "AUTO"
             }
           }
-        },
-        "from": 20
+        }
       }
       this.$http.post("api/_search", config).then((res)=>{
         let hits = res.data.hits.hits;
