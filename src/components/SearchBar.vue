@@ -10,7 +10,7 @@
       <input ref="searchInput" class="inputInfo" type="text" v-model="keyword" @keyup="get($event)"
              @keydown.enter="search()"
              @keydown.down="selectDown()"
-             @keydown.up.prevent="selectUp()" @focus="ifFocus = true;" @blur="ifFocus = false;">
+             @keydown.up.prevent="selectUp()" @focus="ifFocus = true;" @blur="setFocusFalse()">
       <!-- 这是一个小叉叉，点击它可清除输入框内容 -->
       <span class="search-reset" @click="clearInput()">&times;</span>
       <button class="search-btn" @click="search()">Search</button>
@@ -90,6 +90,12 @@ export default {
     },
     clearInput: function () {
       this.keyword = '';
+    },
+    setFocusFalse: function () {
+      let that = this;
+      setTimeout(function () {
+        that.ifFocus = false;
+      }, 300);
     }
   },
 }

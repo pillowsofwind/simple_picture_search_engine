@@ -28,7 +28,7 @@ export default {
   data() {
     return {
       historySearch: ["123", "456", "789"],// 历史搜索关键词信息
-      result: [],// 搜索结果的url信息
+      result: [],// 搜索结果信息；格式为[title,url]
       backgroundimage: "url(https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fdpic.tiankong.com%2Fs1%2F2h%2FQJ8879664576.jpg&refer=http%3A%2F%2Fdpic.tiankong.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625233227&t=c4e40368a5e3a774032107f60a13c07c)"
     }
   },
@@ -48,10 +48,18 @@ export default {
           this.historySearch.unshift(keyword);
         }
       }
-      // TODO:发送搜索请求，填进result
-      this.$http.get("api/_search?q=descriptions:"+keyword).then((res)=>{
+
+      // get hits, which is a Json
+      this.$http.get("api/_search?q=descriptions:" + keyword).then((res) => {
         let hits = res.data.hits.hits;
         console.log(hits);
+        for (let i = 0; i < hits.length; i++) {
+          let source = hits[i]["_source"];
+          let title = source["verbose-info"]["title"];
+          let url = source["url"];
+          this.result.push([title, url]);
+        }
+        console.log(this.result);
       }, (err) => {
         let error = err.json();
         console.log(error);
