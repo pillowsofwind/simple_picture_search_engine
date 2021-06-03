@@ -49,9 +49,43 @@ export default {
         }
       }
       // TODO:发送搜索请求，填进result
-      this.$http.get("api/_search?q=descriptions:"+keyword).then((res)=>{
+      let lines = new Set();
+      let match_lines = [];
+      let config = {
+        "query": {
+          "match": {
+            "descriptions": {
+              "query": keyword,
+              "fuzziness": "AUTO"
+            }
+          }
+        },
+        "from": 20
+      }
+      this.$http.post("api/_search", config).then((res)=>{
         let hits = res.data.hits.hits;
         console.log(hits);
+        for (var i = 0; i < hits.length; ++i) {
+          for (var j = 0; j < hits[i]._source.descriptions.length; ++j) {
+            let line = hits[i]._source.descriptions[j];
+            lines.add(line);
+          }
+        }
+        lines = Array.from(lines);
+        console.log(lines);
+        for (var i2 = 0; i2 < lines.length; ++i2) {
+          let pos = lines[i2].toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase());
+          if (pos >= 0) {
+            if (pos == 0) {
+              match_lines.unshift(lines[i2]);
+            }
+            else {
+              match_lines.push(lines[i2]);
+            }
+          }
+        }
+        console.log(match_lines);
+        // match_lines: 含有keyword片段的description列表，开头匹配的优先
       }, (err) => {
         let error = err.json();
         console.log(error);

@@ -18,10 +18,17 @@ server = Elasticsearch("http://localhost:9200")
 print(server.count())
 
 # upload data
-for ok, action in streaming_bulk(client=server, index="images", actions=generate_actions()):
-	pass
+if server.count() == 0:
+	for ok, action in streaming_bulk(client=server, index="images", actions=generate_actions()):
+		pass
 
 print(server.count())
+
+settings = {
+	"max_result_window": "20"
+}
+server.put("images/_settings", settings)
+# requests.post("http://localhost/images/_settings", data=settings)
 
 # query demo
 # while True:
