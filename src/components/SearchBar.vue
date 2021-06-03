@@ -7,17 +7,18 @@
           按回车键有一个进入搜索内容页面，所以有一个keydown.enter事件
           按上下键可以选择列表条目
       -->
-      <input type="text" v-model="keyword" @keyup="get($event)" @keydown.enter="search()" @keydown.down="selectDown()"
-             @keydown.up.prevent="selectUp()">
+      <input ref="searchInput" type="text" v-model="keyword" @keyup="get($event)" @keydown.enter="search()"
+             @keydown.down="selectDown()"
+             @keydown.up.prevent="selectUp()" @focus="ifFocus = true;" @blur="ifFocus = false;">
       <!-- 这是一个小叉叉，点击它可清除输入框内容 -->
       <span class="search-reset" @click="clearInput()">&times;</span>
       <button class="search-btn" @click="search()">Search</button>
       <div class="search-select">
         <!-- transition-group也是vue2.0中的新特性,tag='ul'表示用ul包裹v-for出来的li -->
         <transition-group name="itemfade" tag="ul" mode="out-in" v-cloak>
-          <li v-for="(value,index) in myData" :class="{selectback:index==now}"
-              class="search-select-option search-select-list" @mouseover="selectHover(index)"
-              @click="selectClick(index)" :key="value">
+          <li v-show="ifFocus||ifMenuFocus" v-for="(value,index) in myData" :class="{selectback:index==now}"
+              class="search-select-option search-select-list" @mouseover="selectHover(index); ifMenuFocus= true;"
+              @click="selectClick(index); ifMenuFocus=false;" :key="value">
             {{ value }}
           </li>
         </transition-group>
@@ -41,6 +42,8 @@ export default {
       keyword: '',// v-model绑定的输入框的value
       now: -1,
       searchIndex: 0,
+      ifFocus: false,
+      ifMenuFocus: false,
     }
   },
   methods: {
@@ -61,17 +64,22 @@ export default {
     },
     selectUp: function () {
       this.now--;
-      //同 上
+      // 同上
       if (this.now == -1) {
         this.now = this.myData.length - 1;
       }
       this.keyword = this.myData[this.now];
     },
     search: function () {
+      this.$refs.searchInput.blur();
+      this.ifMenuFocus = false;
+
       this.$emit("search",
           {
             keyword: this.keyword,
           });
+
+      console.log("search", this.keyword)
     },
     selectHover: function (index) {
       this.now = index
