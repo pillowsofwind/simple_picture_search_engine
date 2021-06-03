@@ -27,7 +27,7 @@ export default {
   components: {SearchBar},
   data() {
     return {
-      historySearch: ["123","456","789"],// 历史搜索关键词信息
+      historySearch: ["123", "456", "789"],// 历史搜索关键词信息
       result: [],// 搜索结果的url信息
       backgroundimage: "url(https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fdpic.tiankong.com%2Fs1%2F2h%2FQJ8879664576.jpg&refer=http%3A%2F%2Fdpic.tiankong.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625233227&t=c4e40368a5e3a774032107f60a13c07c)"
     }
@@ -35,13 +35,11 @@ export default {
   methods: {
     search: function (msg) {
       let keyword = msg.keyword;
-      console.log(keyword);
-
       let include = this.historySearch.indexOf(keyword);
       if (include !== -1) {
-          let special = this.historySearch[include];
-          this.historySearch.splice(include,1);
-          this.historySearch.unshift(special);
+        let special = this.historySearch[include];
+        this.historySearch.splice(include, 1);
+        this.historySearch.unshift(special);
       } else {
         if (this.historySearch.length < 8) {
           this.historySearch.unshift(keyword);
