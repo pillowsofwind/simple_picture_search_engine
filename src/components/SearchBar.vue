@@ -7,7 +7,8 @@
           按回车键有一个进入搜索内容页面，所以有一个keydown.enter事件
           按上下键可以选择列表条目
       -->
-      <input ref="searchInput" type="text" v-model="keyword" @keyup="get($event)" @keydown.enter="search()"
+      <input ref="searchInput" class="inputInfo" type="text" v-model="keyword" @keyup="get($event)"
+             @keydown.enter="search()"
              @keydown.down="selectDown()"
              @keydown.up.prevent="selectUp()" @focus="ifFocus = true;" @blur="ifFocus = false;">
       <!-- 这是一个小叉叉，点击它可清除输入框内容 -->
@@ -16,9 +17,9 @@
       <div class="search-select">
         <!-- transition-group也是vue2.0中的新特性,tag='ul'表示用ul包裹v-for出来的li -->
         <transition-group name="itemfade" tag="ul" mode="out-in" v-cloak>
-          <li v-show="ifFocus||ifMenuFocus" v-for="(value,index) in myData" :class="{selectback:index==now}"
-              class="search-select-option search-select-list" @mouseover="selectHover(index); ifMenuFocus= true;"
-              @click="selectClick(index); ifMenuFocus=false;" :key="value">
+          <li v-show="ifFocus" v-for="(value,index) in myData" :class="{selectback:index==now}"
+              class="search-select-option search-select-list" @mouseover="selectHover(index); "
+              @click="selectClick(index); " :key="value">
             {{ value }}
           </li>
         </transition-group>
@@ -43,7 +44,6 @@ export default {
       now: -1,
       searchIndex: 0,
       ifFocus: false,
-      ifMenuFocus: false,
     }
   },
   methods: {
@@ -72,7 +72,7 @@ export default {
     },
     search: function () {
       this.$refs.searchInput.blur();
-      this.ifMenuFocus = false;
+      this.ifFocus = false;
 
       this.$emit("search",
           {
@@ -91,7 +91,7 @@ export default {
     clearInput: function () {
       this.keyword = '';
     }
-  }
+  },
 }
 </script>
 
