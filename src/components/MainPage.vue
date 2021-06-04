@@ -24,6 +24,55 @@
 import SearchBar from "@/components/SearchBar";
 import PictureBook from "@/components/PictureBook";
 
+function rgb2hsv (rgb) {
+    let r = rgb[0];
+    let g = rgb[1];
+    let b = rgb[2];
+    let rabs, gabs, babs, rr, gg, bb, h, s, v, diff, diffc, percentRoundFn;
+    rabs = r / 255;
+    gabs = g / 255;
+    babs = b / 255;
+    v = Math.max(rabs, gabs, babs),
+    diff = v - Math.min(rabs, gabs, babs);
+    diffc = c => (v - c) / 6 / diff + 1 / 2;
+    percentRoundFn = num => Math.round(num * 100) / 100;
+    if (diff == 0) {
+        h = s = 0;
+    } else {
+        s = diff / v;
+        rr = diffc(rabs);
+        gg = diffc(gabs);
+        bb = diffc(babs);
+
+        if (rabs === v) {
+            h = bb - gg;
+        } else if (gabs === v) {
+            h = (1 / 3) + rr - bb;
+        } else if (babs === v) {
+            h = (2 / 3) + gg - rr;
+        }
+        if (h < 0) {
+            h += 1;
+        }else if (h > 1) {
+            h -= 1;
+        }
+    }
+    return {
+        h: Math.round(h * 360),
+        s: percentRoundFn(s * 100),
+        v: percentRoundFn(v * 100)
+    };
+}
+
+let hsvRange = {
+  "black": [[0, 360], [0, 100], [0, 17]],
+  "gray": [[0, 360], [0, 17], [17, 86]],
+  "white": [[0, 360], [0, 17], [86, 100]],
+  "red": [[0, 40, 320, 360], [17, 100], [18, 100]],
+  "green": [[80, 160], [17, 100], [18, 100]],
+  "blue": [[200, 280], [17, 100], [18, 100]],
+}
+
 export default {
   name: "MainPage",
   components: {PictureBook, SearchBar},
@@ -100,7 +149,7 @@ export default {
 
           // advanced search result
           if (colorSpecified) {
-
+            console.log(colorSpecified);
             let img_url = url + "?" + Date.parse(new Date());
 
             let img = new Image();
@@ -121,14 +170,63 @@ export default {
               // 变换为一维数据RGBA
               data = data.data;
               let imgArr = [];
-              for (let i = 0; i < data.length; i += 4) {
-                imgArr.push(data[i], data[i + 1], data[i + 2])
+              let pace = Math.round(Math.sqrt(data.length));
+              for (let i = 0; i < data.length; i += 4*pace) {
+                imgArr.push([data[i], data[i + 1], data[i + 2]])
+              }
+              // 阻塞版本
+              var kMeans = require('kmeans-js');
+
+              let clusterNum = 8;
+
+              var km = new kMeans({
+                  K: clusterNum
+              });
+
+              km.cluster(imgArr);
+              while (km.step()) {
+                  km.findClosestCentroids();
+                  km.moveCentroids();
+                  if(km.hasConverged()) break;
               }
 
-              console.log(imgArr);
-
-              // TODO: If imgArr don't contain the expected color then drop.
-
+              let total_cnum = 0;
+              let rate = 1;
+              for (let t = 0; t < clusterNum; ++t) {
+                total_cnum += km.clusters[t].length;
+              }
+              let hsv_range = hsvRange[colorSpecified];
+              let gflag = false;
+              for (let t = 0; t < clusterNum; ++t) {
+                if (km.clusters[t].length < total_cnum * rate / clusterNum)
+                  continue;
+                let color = rgb2hsv(km.centroids[t]);
+                color = [color.h, color.s, color.v];
+                // console.log(color);
+                let flag = true;
+                for (let t = 0; t < 3; ++t) {
+                  if (hsv_range[t].length == 2 && (color[t] < hsv_range[t][0] || color[t] > hsv_range[t][1])) {
+                    flag = false;
+                    break;
+                  }
+                  if (hsv_range[t].length == 4 && ((color[t] < hsv_range[t][0] || color[t] > hsv_range[t][1]) && (color[t] < hsv_range[t][2] || color[t] > hsv_range[t][3]))) {
+                    flag = false;
+                    break;
+                  }
+                }
+                if (flag) {
+                  gflag = true;
+                  break;
+                }
+              }
+              
+              if (!gflag) {
+                // TODO: color not ok, drop it
+                console.log(i, "not ok");
+              }
+              else {
+                console.log(i, "ok");
+              }
             };
           }
           if (sizeSpecified) {
