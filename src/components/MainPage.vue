@@ -6,7 +6,7 @@
       <v-main>
         <v-container>
           <SearchBar
-              ref = "searchBar"
+              ref="searchBar"
               v-bind:list-item="listItem"
               v-on:search="search"
               v-on:inspire="inspire"/>
@@ -100,7 +100,36 @@ export default {
 
           // advanced search result
           if (colorSpecified) {
-            // TODO: If don't contain the expected color then drop.
+
+            let img_url = url + "?" + Date.parse(new Date());
+
+            let img = new Image();
+            img.src = img_url;
+            img.crossOrigin = "Anonymous";
+            img.onload = function () {
+              let width = img.width;
+              let height = img.height;
+
+              let canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+
+              let ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0);
+
+              let data = ctx.getImageData(0, 0, width, height);
+              // 变换为一维数据RGBA
+              data = data.data;
+              let imgArr = [];
+              for (let i = 0; i < data.length; i += 4) {
+                imgArr.push(data[i], data[i + 1], data[i + 2])
+              }
+
+              console.log(imgArr);
+
+              // TODO: If imgArr don't contain the expected color then drop.
+
+            };
           }
           if (sizeSpecified) {
             let size = source["verbose-info"]["original-size"];
