@@ -4,9 +4,8 @@
       <div>
         <stack :column-min-width="320" gutter-width="4" monitor-images-loaded="true">
           <stack-item v-for="(item, i) in myInfo" :key="i">
-            <div
-                style="background:#eeeeee; color:#2c3e50; border-radius: 10px; border: solid 1px #dddddd; padding: 10px; margin:10px 10px 10px 10px;">
-              <img height="260" width="320" style="border-radius: 10px" :src="item.url" @click="jumpToSource(item.url)">
+            <div class="imageDiv">
+              <img class="image" height="260" width="320" :src="item.url" @click="jumpToSource(item.url)">
               <h4>{{ item.title }}</h4>
             </div>
           </stack-item>
@@ -40,6 +39,17 @@ export default {
 }
 </script>
 
-<style scoped>
+<style type="text/css">
+.imageDiv {
+  background:#eeeeee;
+  color:#2c3e50;
+  border-radius: 10px;
+  border: solid 1px #dddddd;
+  padding: 10px;
+  margin:10px 10px 10px 10px;
+}
 
+.image {
+  border-radius: 10px;
+}
 </style>

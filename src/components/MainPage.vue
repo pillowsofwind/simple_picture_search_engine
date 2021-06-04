@@ -15,8 +15,7 @@
         </v-container>
       </v-main>
       <v-spacer></v-spacer>
-      <v-footer
-          style=" filter:alpha(opacity:30); opacity:0.7; clear: both;display: block;text-align: center;margin: 0px auto;position: absolute;bottom: 0%;width: 100%;">
+      <v-footer class="footer">
         ©2021, Tsinghua
       </v-footer>
     </v-app>
@@ -191,6 +190,17 @@ export default {
 }
 </script>
 
-<style scoped>
+<style type="text/css">
+.footer {
+  filter: alpha(opacity:30);
+  opacity: 0.7;
+  clear: both;
+  display: block;
+  text-align: center;
+  margin: 0px auto;
+  position: absolute;
+  bottom: 0%;
+  width: 100%;
+}
 
 </style>

@@ -7,7 +7,10 @@
           按回车键有一个进入搜索内容页面，所以有一个keydown.enter事件
           按上下键可以选择列表条目
       -->
-      <input ref="searchInput" class="inputInfo" type="text" v-model="keyword" @keyup="get($event)"
+      <input ref="searchInput" class="inputInfo"
+             type="text"
+             v-model="keyword"
+             @keyup="get($event)"
              @keydown.enter="search()"
              @keydown.down="selectDown()"
              @keydown.up.prevent="selectUp()" @focus="ifFocus = true; " @blur="setFocusFalse()">
@@ -46,9 +49,7 @@ export default {
       ifFocus: false,
     }
   },
-  watch: {
-
-  },
+  watch: {},
   methods: {
     // &event是实参，表示event对象
     get: function (ev) {
