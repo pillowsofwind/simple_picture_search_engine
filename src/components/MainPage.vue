@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      historySearch: ["lake", "mountain", "air"],// 历史搜索关键词信息
+      historySearch: ["lake", "mountain", "air", "dog"],// 历史搜索关键词信息
       result: [],// 搜索结果信息；格式为[title,url]
       inspire_lines: [],// 提示信息
       listItem: [],
@@ -61,6 +61,23 @@ export default {
         }
       }
 
+      // advanced keyword
+      let keywords = keyword.split(/[ ]+/);
+      keyword = keywords[0];
+      // extract discriptions
+      let colorSpecified = false;
+      let sizeSpecified = false;
+      if (keywords.length > 1) {
+        for (let i = 1; i < keywords.length; ++i) {
+          let description = keywords[i].split(/[:]+/);
+          if (description[0] === "color" || description[0] === "colour") {
+            colorSpecified = description[1];
+          } else if (description[0] === "size") {
+            sizeSpecified = description[1];
+          }
+        }
+      }
+
       let config = {
         "query": {
           "match": {
@@ -74,10 +91,35 @@ export default {
       this.$http.post("api/_search?size=20", config).then((res) => {
         let hits = res.data.hits.hits;
 
+        console.log(hits);
+
         for (let i = 0; i < hits.length; i++) {
           let source = hits[i]["_source"];
           let title = source["verbose-info"]["title"];
           let url = source["url"];
+
+          // advanced search result
+          if (colorSpecified) {
+            // TODO: If don't contain the expected color then drop.
+          }
+          if (sizeSpecified) {
+            let size = source["verbose-info"]["original-size"];
+
+            if (sizeSpecified === "small") {
+              if (size > 400000) {
+                continue;
+              }
+            } else if (sizeSpecified === "medium") {
+              if (size <= 400000 || size > 3000000) {
+                continue;
+              }
+            } else if (sizeSpecified === "large" || sizeSpecified === "big") {
+              if (size <= 3000000) {
+                continue;
+              }
+            }
+          }
+
           this.result.push({
             "title": title,
             "url": url,
@@ -92,7 +134,7 @@ export default {
     inspire: function (keyword) {
       if (keyword.keyword === "") {
         this.listItem = this.historySearch;
-        return ;
+        return;
       }
       keyword = keyword.keyword;
       let lines = new Set();

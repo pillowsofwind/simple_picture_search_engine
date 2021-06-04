@@ -47,9 +47,7 @@ export default {
     }
   },
   watch: {
-    keyword(val, oldVal){
-      console.log(val,oldVal);
-    },
+
   },
   methods: {
     // &event是实参，表示event对象
@@ -102,7 +100,6 @@ export default {
             keyword: this.keyword,
           });
 
-      console.log("search", this.keyword)
     },
     inspire: function () {
 
