@@ -24,44 +24,44 @@
 import SearchBar from "@/components/SearchBar";
 import PictureBook from "@/components/PictureBook";
 
-function rgb2hsv (rgb) {
-    let r = rgb[0];
-    let g = rgb[1];
-    let b = rgb[2];
-    let rabs, gabs, babs, rr, gg, bb, h, s, v, diff, diffc, percentRoundFn;
-    rabs = r / 255;
-    gabs = g / 255;
-    babs = b / 255;
-    v = Math.max(rabs, gabs, babs),
-    diff = v - Math.min(rabs, gabs, babs);
-    diffc = c => (v - c) / 6 / diff + 1 / 2;
-    percentRoundFn = num => Math.round(num * 100) / 100;
-    if (diff == 0) {
-        h = s = 0;
-    } else {
-        s = diff / v;
-        rr = diffc(rabs);
-        gg = diffc(gabs);
-        bb = diffc(babs);
+function rgb2hsv(rgb) {
+  let r = rgb[0];
+  let g = rgb[1];
+  let b = rgb[2];
+  let rabs, gabs, babs, rr, gg, bb, h, s, v, diff, diffc, percentRoundFn;
+  rabs = r / 255;
+  gabs = g / 255;
+  babs = b / 255;
+  v = Math.max(rabs, gabs, babs),
+      diff = v - Math.min(rabs, gabs, babs);
+  diffc = c => (v - c) / 6 / diff + 1 / 2;
+  percentRoundFn = num => Math.round(num * 100) / 100;
+  if (diff == 0) {
+    h = s = 0;
+  } else {
+    s = diff / v;
+    rr = diffc(rabs);
+    gg = diffc(gabs);
+    bb = diffc(babs);
 
-        if (rabs === v) {
-            h = bb - gg;
-        } else if (gabs === v) {
-            h = (1 / 3) + rr - bb;
-        } else if (babs === v) {
-            h = (2 / 3) + gg - rr;
-        }
-        if (h < 0) {
-            h += 1;
-        }else if (h > 1) {
-            h -= 1;
-        }
+    if (rabs === v) {
+      h = bb - gg;
+    } else if (gabs === v) {
+      h = (1 / 3) + rr - bb;
+    } else if (babs === v) {
+      h = (2 / 3) + gg - rr;
     }
-    return {
-        h: Math.round(h * 360),
-        s: percentRoundFn(s * 100),
-        v: percentRoundFn(v * 100)
-    };
+    if (h < 0) {
+      h += 1;
+    } else if (h > 1) {
+      h -= 1;
+    }
+  }
+  return {
+    h: Math.round(h * 360),
+    s: percentRoundFn(s * 100),
+    v: percentRoundFn(v * 100)
+  };
 }
 
 let hsvRange = {
@@ -110,7 +110,7 @@ export default {
         }
       }
 
-      // advanced keyword
+      // get advanced keyword
       let keywords = keyword.split(/[ ]+/);
       keyword = keywords[0];
       // extract discriptions
@@ -138,14 +138,24 @@ export default {
         }
       }
       this.$http.post("api/_search?size=20", config).then((res) => {
-        let hits = res.data.hits.hits;
 
+        let hits = res.data.hits.hits;
         console.log(hits);
 
         for (let i = 0; i < hits.length; i++) {
           let source = hits[i]["_source"];
           let title = source["verbose-info"]["title"];
           let url = source["url"];
+          let accept = true;
+
+          // normal case
+          if ((!colorSpecified) && (!sizeSpecified)) {
+            this.result.push({
+              "title": title,
+              "url": url,
+            });
+            continue;
+          }
 
           // advanced search result
           if (sizeSpecified) {
@@ -153,20 +163,32 @@ export default {
 
             if (sizeSpecified === "small") {
               if (size > 400000) {
-                continue;
+                accept = false;
               }
             } else if (sizeSpecified === "medium") {
               if (size <= 400000 || size > 3000000) {
-                continue;
+                accept = false;
               }
             } else if (sizeSpecified === "large" || sizeSpecified === "big") {
               if (size <= 3000000) {
-                continue;
+                accept = false;
               }
             }
           }
 
-          if (colorSpecified) {
+          if (!colorSpecified) {
+            if (accept) {
+              this.result.push({
+                "title": title,
+                "url": url,
+              });
+            }
+            continue;
+          }
+
+          // sync till onload function finished!
+          let promise = new Promise(function (resolve) {
+
             console.log(colorSpecified);
             let img_url = url + "?" + Date.parse(new Date());
 
@@ -189,7 +211,7 @@ export default {
               data = data.data;
               let imgArr = [];
               let pace = Math.round(Math.sqrt(data.length));
-              for (let i = 0; i < data.length; i += 4*pace) {
+              for (let i = 0; i < data.length; i += 4 * pace) {
                 imgArr.push([data[i], data[i + 1], data[i + 2]])
               }
               // 阻塞版本
@@ -198,14 +220,14 @@ export default {
               let clusterNum = 8;
 
               var km = new kMeans({
-                  K: clusterNum
+                K: clusterNum
               });
 
               km.cluster(imgArr);
               while (km.step()) {
-                  km.findClosestCentroids();
-                  km.moveCentroids();
-                  if(km.hasConverged()) break;
+                km.findClosestCentroids();
+                km.moveCentroids();
+                if (km.hasConverged()) break;
               }
 
               let total_cnum = 0;
@@ -236,20 +258,20 @@ export default {
                   break;
                 }
               }
-              
               if (!gflag) {
-                // TODO: color not ok, drop it
-                console.log(i, "not ok");
+                accept = false;
               }
-              else {
-                console.log(i, "ok");
-              }
+              resolve();
             };
-          }
+          });
 
-          this.result.push({
-            "title": title,
-            "url": url,
+          promise.then(() => {
+            if (accept) {
+              this.result.push({
+                "title": title,
+                "url": url,
+              });
+            }
           });
         }
         console.log(this.result);
