@@ -15,7 +15,6 @@
   </div>
 </template>
 
-
 <script>
 import {Stack, StackItem} from 'vue-stack-grid';
 

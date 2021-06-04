@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-app id="mainpage"
-           class="backgroundImage"
-           :style="backgroundimage">
+           class="backgroundImage">
+      <h2 class=" title ">Simple Picture Search</h2>
       <v-main>
         <v-container>
           <SearchBar
@@ -38,7 +38,6 @@ export default {
       result: [],// 搜索结果信息；格式为[title,url]
       inspire_lines: [],// 提示信息
       listItem: [],
-      backgroundimage: "url(https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fdpic.tiankong.com%2Fs1%2F2h%2FQJ8879664576.jpg&refer=http%3A%2F%2Fdpic.tiankong.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625233227&t=c4e40368a5e3a774032107f60a13c07c)"
     }
   },
   methods: {
@@ -191,6 +190,10 @@ export default {
 </script>
 
 <style type="text/css">
+.title {
+  color: mediumaquamarine;
+}
+
 .footer {
   filter: alpha(opacity:30);
   opacity: 0.7;
