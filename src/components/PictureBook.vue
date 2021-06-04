@@ -10,6 +10,7 @@
             </div>
           </stack-item>
         </stack>
+        <v-footer>@2021,CST,Tsinghua</v-footer>
       </div>
     </div>
   </div>
@@ -40,12 +41,12 @@ export default {
 
 <style type="text/css">
 .imageDiv {
-  background:#eeeeee;
-  color:#2c3e50;
+  background: #eeeeee;
+  color: #2c3e50;
   border-radius: 10px;
   border: solid 1px #dddddd;
   padding: 10px;
-  margin:10px 10px 10px 10px;
+  margin: 10px 10px 10px 10px;
 }
 
 .image {

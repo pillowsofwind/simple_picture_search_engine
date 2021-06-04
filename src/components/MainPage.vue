@@ -2,10 +2,11 @@
   <div>
     <v-app id="mainpage"
            class="backgroundImage">
-      <h2 class=" title ">Simple Picture Search</h2>
+      <h1 class=" title " @click="clearAll()">Simple Picture Search</h1>
       <v-main>
         <v-container>
           <SearchBar
+              ref = "searchBar"
               v-bind:list-item="listItem"
               v-on:search="search"
               v-on:inspire="inspire"/>
@@ -15,9 +16,6 @@
         </v-container>
       </v-main>
       <v-spacer></v-spacer>
-      <v-footer class="footer">
-        ©2021, Tsinghua
-      </v-footer>
     </v-app>
   </div>
 </template>
@@ -41,6 +39,10 @@ export default {
     }
   },
   methods: {
+    clearAll: function () {
+      this.$refs.searchBar.keyword = "";
+      this.result = [];
+    },
     search: function (msg) {
       this.result = [];
 
