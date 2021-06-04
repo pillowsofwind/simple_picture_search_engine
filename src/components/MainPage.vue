@@ -11,6 +11,7 @@
               v-on:search="search"
               v-on:inspire="inspire"/>
           <p></p>
+          <h2 v-show="emptyResult">Sorry! Nothing found according to your request.</h2>
           <PictureBook
               v-bind:my-info="result"/>
         </v-container>
@@ -85,6 +86,7 @@ export default {
       result: [],// 搜索结果信息；格式为[title,url]
       inspire_lines: [],// 提示信息
       listItem: [],
+      emptyResult: false,
     }
   },
   methods: {
@@ -142,6 +144,8 @@ export default {
 
         let hits = res.data.hits.hits;
         console.log(hits);
+
+        this.emptyResult = hits.length === 0;
 
         for (let i = 0; i < hits.length; i++) {
           let source = hits[i]["_source"];
