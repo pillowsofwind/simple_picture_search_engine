@@ -148,6 +148,24 @@ export default {
           let url = source["url"];
 
           // advanced search result
+          if (sizeSpecified) {
+            let size = source["verbose-info"]["original-size"];
+
+            if (sizeSpecified === "small") {
+              if (size > 400000) {
+                continue;
+              }
+            } else if (sizeSpecified === "medium") {
+              if (size <= 400000 || size > 3000000) {
+                continue;
+              }
+            } else if (sizeSpecified === "large" || sizeSpecified === "big") {
+              if (size <= 3000000) {
+                continue;
+              }
+            }
+          }
+
           if (colorSpecified) {
             console.log(colorSpecified);
             let img_url = url + "?" + Date.parse(new Date());
@@ -191,7 +209,7 @@ export default {
               }
 
               let total_cnum = 0;
-              let rate = 1;
+              let rate = 1;   // 限制比率，1表示只判断像素数目超过平均值的颜色，rate越小则判断范围越大
               for (let t = 0; t < clusterNum; ++t) {
                 total_cnum += km.clusters[t].length;
               }
@@ -202,7 +220,6 @@ export default {
                   continue;
                 let color = rgb2hsv(km.centroids[t]);
                 color = [color.h, color.s, color.v];
-                // console.log(color);
                 let flag = true;
                 for (let t = 0; t < 3; ++t) {
                   if (hsv_range[t].length == 2 && (color[t] < hsv_range[t][0] || color[t] > hsv_range[t][1])) {
@@ -228,23 +245,6 @@ export default {
                 console.log(i, "ok");
               }
             };
-          }
-          if (sizeSpecified) {
-            let size = source["verbose-info"]["original-size"];
-
-            if (sizeSpecified === "small") {
-              if (size > 400000) {
-                continue;
-              }
-            } else if (sizeSpecified === "medium") {
-              if (size <= 400000 || size > 3000000) {
-                continue;
-              }
-            } else if (sizeSpecified === "large" || sizeSpecified === "big") {
-              if (size <= 3000000) {
-                continue;
-              }
-            }
           }
 
           this.result.push({
