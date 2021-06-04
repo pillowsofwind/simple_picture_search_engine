@@ -7,8 +7,10 @@
           按回车键有一个进入搜索内容页面，所以有一个keydown.enter事件
           按上下键可以选择列表条目
       -->
-      <input ref="searchInput" class="inputInfo"
+      <input ref="searchInput"
+             class="inputInfo"
              type="text"
+             placeholder="🔍 Search pictures"
              v-model="keyword"
              @keyup="get($event)"
              @keydown.enter="search()"
@@ -16,7 +18,7 @@
              @keydown.up.prevent="selectUp()" @focus="ifFocus = true; " @blur="setFocusFalse()">
       <!-- 这是一个小叉叉，点击它可清除输入框内容 -->
       <span class="search-reset" @click="clearInput()">&times;</span>
-      <button class="search-btn" @click="search()">Search</button>
+      <button class="search-btn" @click="search()">Search </button>
       <div class="search-select">
         <!-- transition-group也是vue2.0中的新特性,tag='ul'表示用ul包裹v-for出来的li -->
         <transition-group name="itemfade" tag="ul" mode="out-in" v-cloak>
