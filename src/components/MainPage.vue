@@ -6,9 +6,9 @@
       <v-main>
         <v-container>
           <SearchBar
-              v-bind:my-data="historySearch"
-              v-on:search="inspire"/>
-              <!-- v-on:search="search"/> -->
+              v-bind:list-item="listItem"
+              v-on:search="search"
+              v-on:inspire="inspire"/>
           <p></p>
           <PictureBook
               v-bind:my-info="result"/>
@@ -30,11 +30,15 @@ import PictureBook from "@/components/PictureBook";
 export default {
   name: "MainPage",
   components: {PictureBook, SearchBar},
+  created() {
+    this.listItem = this.historySearch;
+  },
   data() {
     return {
       historySearch: ["lake", "mountain", "air"],// 历史搜索关键词信息
       result: [],// 搜索结果信息；格式为[title,url]
       inspire_lines: [],// 提示信息
+      listItem: [],
       backgroundimage: "url(https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fdpic.tiankong.com%2Fs1%2F2h%2FQJ8879664576.jpg&refer=http%3A%2F%2Fdpic.tiankong.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625233227&t=c4e40368a5e3a774032107f60a13c07c)"
     }
   },
@@ -56,7 +60,7 @@ export default {
           this.historySearch.unshift(keyword);
         }
       }
-      // TODO:发送搜索请求，填进result
+
       let config = {
         "query": {
           "match": {
@@ -67,7 +71,7 @@ export default {
           }
         }
       }
-      this.$http.post("api/_search?size=20", config).then((res)=>{
+      this.$http.post("api/_search?size=20", config).then((res) => {
         let hits = res.data.hits.hits;
 
         for (let i = 0; i < hits.length; i++) {
@@ -86,6 +90,10 @@ export default {
       })
     },
     inspire: function (keyword) {
+      if (keyword.keyword === "") {
+        this.listItem = this.historySearch;
+        return ;
+      }
       keyword = keyword.keyword;
       let lines = new Set();
       this.inspire_lines = [];
@@ -102,7 +110,7 @@ export default {
       let best_fit = [];
       let good_fit = [];
       let norm_fit = [];
-      this.$http.post("api/_search?size=20", config).then((res)=>{
+      this.$http.post("api/_search?size=20", config).then((res) => {
         let hits = res.data.hits.hits;
         for (var i = 0; i < hits.length; ++i) {
           for (var j = 0; j < hits[i]._source.descriptions.length; ++j) {
@@ -115,23 +123,23 @@ export default {
           let pos = lines[i2].toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase());
           if (pos >= 0) {
             if (pos == 0) {
-              let nextchar = lines[i2][pos+keyword.length];
+              let nextchar = lines[i2][pos + keyword.length];
               if ((nextchar >= "A" && nextchar <= "Z") || (nextchar >= "a" && nextchar <= "z")) {
                 good_fit.push(lines[i2]);
-              }
-              else {
+              } else {
                 best_fit.push(lines[i2]);
               }
-            }
-            else {
+            } else {
               norm_fit.push(lines[i2]);
             }
           }
         }
-        this.inspire_lines.push(...best_fit)
-        this.inspire_lines.push(...good_fit)
-        this.inspire_lines.push(...norm_fit)
-        console.log(this.inspire_lines)
+        this.inspire_lines.push(...best_fit);
+        this.inspire_lines.push(...good_fit);
+        this.inspire_lines.push(...norm_fit);
+        this.inspire_lines = this.inspire_lines.slice(0, 8);
+        console.log(this.inspire_lines);
+        this.listItem = this.inspire_lines;
       }, (err) => {
         let error = err.json();
         console.log(error);

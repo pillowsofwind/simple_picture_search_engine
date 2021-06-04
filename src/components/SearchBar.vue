@@ -10,14 +10,14 @@
       <input ref="searchInput" class="inputInfo" type="text" v-model="keyword" @keyup="get($event)"
              @keydown.enter="search()"
              @keydown.down="selectDown()"
-             @keydown.up.prevent="selectUp()" @focus="ifFocus = true;" @blur="setFocusFalse()">
+             @keydown.up.prevent="selectUp()" @focus="ifFocus = true; " @blur="setFocusFalse()">
       <!-- 这是一个小叉叉，点击它可清除输入框内容 -->
       <span class="search-reset" @click="clearInput()">&times;</span>
       <button class="search-btn" @click="search()">Search</button>
       <div class="search-select">
         <!-- transition-group也是vue2.0中的新特性,tag='ul'表示用ul包裹v-for出来的li -->
         <transition-group name="itemfade" tag="ul" mode="out-in" v-cloak>
-          <li v-show="ifFocus" v-for="(value,index) in myData" :class="{selectback:index==now}"
+          <li v-show="ifFocus" v-for="(value,index) in listItem" :class="{selectback:index==now}"
               class="search-select-option search-select-list" @mouseover="selectHover(index); "
               @click="selectClick(index); " :key="value">
             {{ value }}
@@ -33,18 +33,23 @@
 export default {
   name: "SearchBar",
   props: {
-    myData: {// 历史搜索信息，双向绑定到MainPage
+    listItem: {// history search keywords or inspirations
       type: Array,
       default: () => []
     }
   },
   data: function () {
     return {
-      keyword: '',// v-model绑定的输入框的value
+      keyword: '',
       now: -1,
       searchIndex: 0,
       ifFocus: false,
     }
+  },
+  watch: {
+    keyword(val, oldVal){
+      console.log(val,oldVal);
+    },
   },
   methods: {
     // &event是实参，表示event对象
@@ -53,22 +58,40 @@ export default {
       if (ev.keyCode == 38 || ev.keyCode == 40) {
         return;
       }
+
+      this.inspire();
     },
     selectDown: function () {
       this.now++;
       // 到达最后一个时，再按下就回到第一个
-      if (this.now == this.myData.length) {
+      if (this.now == this.listItem.length) {
         this.now = 0;
       }
-      this.keyword = this.myData[this.now];
+      this.keyword = this.listItem[this.now];
     },
     selectUp: function () {
       this.now--;
       // 同上
       if (this.now == -1) {
-        this.now = this.myData.length - 1;
+        this.now = this.listItem.length - 1;
       }
-      this.keyword = this.myData[this.now];
+      this.keyword = this.listItem[this.now];
+    },
+    selectHover: function (index) {
+      this.now = index
+    },
+    selectClick: function (index) {
+      this.keyword = this.listItem[index];
+      this.search();
+    },
+    clearInput: function () {
+      this.keyword = '';
+    },
+    setFocusFalse: function () {
+      let that = this;
+      setTimeout(function () {
+        that.ifFocus = false;
+      }, 300);
     },
     search: function () {
       this.$refs.searchInput.blur();
@@ -81,21 +104,12 @@ export default {
 
       console.log("search", this.keyword)
     },
-    selectHover: function (index) {
-      this.now = index
-    },
-    selectClick: function (index) {
-      this.keyword = this.myData[index];
-      this.search();
-    },
-    clearInput: function () {
-      this.keyword = '';
-    },
-    setFocusFalse: function () {
-      let that = this;
-      setTimeout(function () {
-        that.ifFocus = false;
-      }, 300);
+    inspire: function () {
+
+      this.$emit("inspire",
+          {
+            keyword: this.keyword,
+          });
     }
   },
 }
