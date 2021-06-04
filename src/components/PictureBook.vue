@@ -5,7 +5,7 @@
         <stack :column-min-width="320" gutter-width="4" monitor-images-loaded="true">
           <stack-item v-for="(item, i) in myInfo" :key="i">
             <div class="imageDiv">
-              <img class="image" height="260" width="320" :src="item.url" @click="jumpToSource(item.url)">
+              <img class="image" height="240" width="300" :src="item.url" @click="jumpToSource(item.url)">
               <h4>{{ item.title }}</h4>
             </div>
           </stack-item>

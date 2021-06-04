@@ -91,6 +91,7 @@ export default {
     clearAll: function () {
       this.$refs.searchBar.keyword = "";
       this.result = [];
+      this.listItem = this.historySearch;
     },
     search: function (msg) {
       this.result = [];
