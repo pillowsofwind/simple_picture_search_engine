@@ -137,7 +137,7 @@ export default {
           }
         }
       }
-      this.$http.post("api/_search?size=20", config).then((res) => {
+      this.$http.post("api/_search?size=40", config).then((res) => {
 
         let hits = res.data.hits.hits;
         console.log(hits);
