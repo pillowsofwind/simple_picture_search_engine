@@ -66,12 +66,12 @@ function rgb2hsv(rgb) {
 }
 
 let hsvRange = {
-  "black": [[0, 360], [0, 100], [0, 17]],
-  "gray": [[0, 360], [0, 17], [17, 86]],
-  "white": [[0, 360], [0, 17], [86, 100]],
-  "red": [[0, 40, 320, 360], [17, 100], [18, 100]],
-  "green": [[80, 160], [17, 100], [18, 100]],
-  "blue": [[200, 280], [17, 100], [18, 100]],
+  "black": [[0, 360], [0, 100], [0, 18]],
+  "gray": [[0, 360], [0, 17], [18, 86]],
+  "white": [[0, 360], [0, 12], [86, 100]],
+  "red": [[0, 20, 312, 360], [40, 100], [40, 100]],
+  "green": [[70, 154], [40, 100], [40, 100]],
+  "blue": [[200, 248], [40, 100], [40, 100]],
 }
 
 export default {
@@ -143,7 +143,6 @@ export default {
       this.$http.post("api/_search?size=40", config).then((res) => {
 
         let hits = res.data.hits.hits;
-        console.log(hits);
 
         this.emptyResult = hits.length === 0;
 
@@ -181,6 +180,7 @@ export default {
             }
           }
 
+          if (!accept) continue;
           if (!colorSpecified) {
             if (accept) {
               this.result.push({
@@ -215,14 +215,16 @@ export default {
               // 变换为一维数据RGBA
               data = data.data;
               let imgArr = [];
-              let pace = Math.round(Math.sqrt(data.length));
+              // let pace = Math.round(Math.sqrt(data.length) / 10);
+              let pace = Math.round(data.length / 400);
               for (let i = 0; i < data.length; i += 4 * pace) {
                 imgArr.push([data[i], data[i + 1], data[i + 2]])
               }
               // 阻塞版本
               var kMeans = require('kmeans-js');
 
-              let clusterNum = 8;
+              let clusterNum = 12;
+              let rate = 1;   // 限制比率，1表示只判断像素数目超过平均值的颜色，rate越小则判断范围越大
 
               var km = new kMeans({
                 K: clusterNum
@@ -236,7 +238,6 @@ export default {
               }
 
               let total_cnum = 0;
-              let rate = 1;   // 限制比率，1表示只判断像素数目超过平均值的颜色，rate越小则判断范围越大
               for (let t = 0; t < clusterNum; ++t) {
                 total_cnum += km.clusters[t].length;
               }
@@ -259,6 +260,7 @@ export default {
                   }
                 }
                 if (flag) {
+                  console.log(color);
                   gflag = true;
                   break;
                 }
