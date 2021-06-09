@@ -58,24 +58,27 @@ function rgb2hsv(rgb) {
       h -= 1;
     }
   }
-  return {
-    h: Math.round(h * 360),
-    s: percentRoundFn(s * 100),
-    v: percentRoundFn(v * 100)
-  };
+  // return {
+  //   h: Math.round(h * 360),
+  //   s: percentRoundFn(s * 100),
+  //   v: percentRoundFn(v * 100)
+  // };
+  return [Math.round(h * 360), percentRoundFn(s * 100), percentRoundFn(v * 100)]
 }
 
+let s_low = 30;
+let v_low = 20;
 let hsvRange = {
   "black": [[0, 360], [0, 100], [0, 18]],
   "gray": [[0, 360], [0, 17], [18, 86]],
   "white": [[0, 360], [0, 12], [86, 100]],
-  "red": [[0, 20, 312, 360], [40, 100], [40, 100]],
-  "green": [[70, 154], [40, 100], [40, 100]],
-  "blue": [[200, 248], [40, 100], [40, 100]],
-  "yellow": [[52, 68], [40, 100], [40, 100]],
-  "purple": [[250, 310], [40, 100], [40, 100]],
-  "orange": [[22, 50], [40, 100], [40, 100]],
-  "cyan": [[156, 198], [40, 100], [40, 100]]
+  "red": [[0, 20, 312, 360], [s_low, 100], [v_low, 100]],
+  "green": [[70, 154], [s_low, 100], [v_low, 100]],
+  "blue": [[200, 248], [s_low, 100], [v_low, 100]],
+  "yellow": [[52, 68], [s_low, 100], [v_low, 100]],
+  "purple": [[250, 310], [s_low, 100], [v_low, 100]],
+  "orange": [[22, 50], [s_low, 100], [v_low, 100]],
+  "cyan": [[156, 198], [s_low, 100], [v_low, 100]]
 }
 
 export default {
@@ -222,12 +225,13 @@ export default {
               // let pace = Math.round(Math.sqrt(data.length) / 10);
               let pace = Math.round(data.length / 400);
               for (let i = 0; i < data.length; i += 4 * pace) {
-                imgArr.push([data[i], data[i + 1], data[i + 2]])
+                imgArr.push(rgb2hsv([data[i], data[i+1], data[i+2]]))
+                // imgArr.push([data[i], data[i + 1], data[i + 2]])
               }
               // 阻塞版本
               var kMeans = require('kmeans-js');
 
-              let clusterNum = 12;
+              let clusterNum = 15;
               let rate = 1;   // 限制比率，1表示只判断像素数目超过平均值的颜色，rate越小则判断范围越大
 
               var km = new kMeans({
@@ -250,8 +254,8 @@ export default {
               for (let t = 0; t < clusterNum; ++t) {
                 if (km.clusters[t].length < total_cnum * rate / clusterNum)
                   continue;
-                let color = rgb2hsv(km.centroids[t]);
-                color = [color.h, color.s, color.v];
+                // let color = rgb2hsv(km.centroids[t]);
+                let color = km.centroids[t];
                 let flag = true;
                 for (let t = 0; t < 3; ++t) {
                   if (hsv_range[t].length == 2 && (color[t] < hsv_range[t][0] || color[t] > hsv_range[t][1])) {

@@ -1,8 +1,12 @@
 # searchengine
 
-## Project setup
+## Backend setup
+Read `scripts/readme.md` for details.
+
+## Frontend setup && Run the app
 ```
 npm install
+npm run serve
 ```
 
 ### Compiles and hot-reloads for development

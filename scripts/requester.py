@@ -5,7 +5,7 @@ import tqdm
 import json
 import requests
 
-f = open("data.json", "r")
+f = open("data_test.json", "r")
 obj_list = json.loads(f.read())
 
 def generate_actions():
@@ -18,8 +18,8 @@ server = Elasticsearch("http://localhost:9200")
 print(server.count())
 
 # upload data
-if server.count() == 0:
-	for ok, action in streaming_bulk(client=server, index="images", actions=generate_actions()):
-		pass
+
+for ok, action in streaming_bulk(client=server, index="images", actions=generate_actions()):
+	pass
 
 print(server.count())
